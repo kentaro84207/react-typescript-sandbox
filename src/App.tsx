@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { FC, useReducer, useMemo, useCallback } from 'react'
+import { reducer, initialState } from './reducer'
+import { increment, decrement } from './actionCreaters'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+type Props = {
+  countLabel: string
+  onClickIncrement: () => void
+  onClickDecrement: () => void
 }
 
-export default App;
+const Component: FC<Props> = props => (
+  <div>
+    Count: {props.countLabel}
+    <button onClick={props.onClickIncrement}>+</button>
+    <button onClick={props.onClickDecrement}>-</button>
+  </div>
+)
+
+const Container: FC = () => {
+  const [state, dispatch] = useReducer(reducer, initialState({ count: 0 }))
+  const countLabel = useMemo(() => `${state.count} ${state.unit}`, [state])
+  const onClickIncrement = useCallback(() => dispatch(increment()), [])
+  const onClickDecrement = useCallback(() => dispatch(decrement()), [])
+
+  return (
+    <Component
+      countLabel={countLabel}
+      onClickIncrement={onClickIncrement}
+      onClickDecrement={onClickDecrement}
+    />
+  )
+}
+
+export default Container;
